@@ -143,7 +143,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		font-size: 10rpx;
+		font-size: 20rpx;
 		padding: 10rpx;
 	}
 	.line {
