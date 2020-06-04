@@ -5,18 +5,33 @@
 			<text class="bold">{{todayPlan}}%</text>
 		</view>
 		<view class="plan"><i :style="'width:'+todayPlan+'%'"></i></view>
+
 		<view class="line">
 			<text class="text">你的生日是:</text>
 			<e-picker mode="date"  class="bold"  @change="change">{{birthDay||'选择出生日期'}}</e-picker>
 		</view>
+
+		<view class="line">
+			<text class="text">你的年龄是:</text>
+			<text class="bold">{{age}}</text>
+		</view>
+
 		<view class="line" v-show="birthDay">
 			<text class="text">对于80岁，你目前的进度是:</text>
 			<text class="bold">{{agePlan}}%</text>
 		</view>
 		<view class="plan"><i :style="'width:'+agePlan+'%'"></i></view>
+
 		<view class="line" v-show="birthDay">
 			<text class="text">你目前的年龄相当于时钟上的:</text>
 			<text class="bold">{{timePlan}}</text>
+		</view>
+		
+		<view class="clock-content">
+			<div class="clock">
+				<div class="hand hour" :style="'transform: rotate('+ hourDeg +'deg);'"></div>
+				<div class="hand min" :style="'transform: rotate('+ minDeg +'deg);'"></div>
+			</div>
 		</view>
 	</view>
 </template>
@@ -28,8 +43,13 @@
 				birthDay: '',
 				todayPlan:'',
 				agePlan:'',
+				age:0,
 				timePlan:'',
-				birthDayKey: 'birthDay'
+				birthDayKey: 'birthDay',
+				hourPlan: 0,
+				minPlan: 0,
+				hourDeg:0,
+				minDeg:0
 			}
 		},
 		onLoad() {
@@ -86,6 +106,7 @@
 				let year = Number(str.substr(0,4));
 				let month = Number(str.substr(5,2));
 				let day = Number(str.substr(8,4));
+				this.age = now.getFullYear() - year;
 				let startBirthDay = Math.floor(new Date(year + '-' + month + '-' + day + ' 00:00:00').getTime()/1000);
 				let endBirthDay = Math.floor(new Date(Number(year + 80) + '-' + month + '-' + day + ' 23:59:59').getTime()/1000);
 				let nowTimeStamp = Math.floor(now.getTime()/1000);
@@ -102,7 +123,16 @@
 				let hour = Math.trunc(agePlan/60);
 				let minute = agePlan%60;
 				this.timePlan = hour+'点'+minute+'分';
-			}
+				this.hourPlan = hour;
+				this.minPlan = minute;
+				this.timeAnimation();
+			},
+			timeAnimation() {
+				const minsDegrees = (this.minPlan / 60) * 360 + (60 / 60) * 6 + 90;
+				this.minDeg = minsDegrees;
+				const hourDegrees = (this.hourPlan / 12) * 360 + (this.minPlan / 60) * 30 + 90;
+				this.hourDeg = hourDegrees;
+			},
 		}
 	}
 </script>
@@ -114,12 +144,13 @@
 		align-items: center;
 		justify-content: center;
 		font-size: 10rpx;
+		padding: 10rpx;
 	}
 	.line {
 		display: flex;
 		flex-direction: row;
 		width: 100%;
-		margin: 10rpx 10rpx 0;
+		margin: 25rpx 10rpx 10rpx;
 	}
 	.text {
 		display: flex;
@@ -146,5 +177,44 @@
 		top: 0;
 		height: 15rpx;
 		background-color: #5d97fb;
+	}
+	.clock-content {
+		width: 500rpx;
+		margin: 0 auto;
+		height: 500rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.clock {
+		width: 300rpx;
+		height: 300rpx;
+		border: 5rpx solid #5570a3;
+		border-radius: 50%;
+		position: relative;
+		padding: 2rpx;
+		box-shadow: 0 0 0 4rpx rgba(0, 0, 0, 0.1), inset 0 0 0 3rpx #efefef,
+		inset 0 0 10rpx #333, 0 0 10rpx rgba(0, 0, 0, 0.2);
+	}
+
+
+	.hand {
+		width: 45%;
+		height: 6rpx;
+		background: #5570a3;
+		position: absolute;
+		top: 50%;
+		transform-origin: 100%;
+		transform: rotate(90deg);
+		transition: all 0.05s;
+		transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+	}
+	.hand.sec {
+		height: 2rpx;
+	}
+	.hand.hour {
+		width: 30%;
+		left: 16%;
+		top: 50%;
 	}
 </style>
