@@ -33,10 +33,15 @@
 				<div class="hand min" :style="'transform: rotate('+ minDeg +'deg);'"></div>
 			</div>
 		</view>
+
+		<view class="line">
+			<text class="bold">{{poem}}</text>
+		</view>
 	</view>
 </template>
 
 <script>
+	const poem = require('../../utils/jinrishici')
 	export default {
 		data() {
 			return {
@@ -47,16 +52,24 @@
 				timePlan:'',
 				birthDayKey: 'birthDay',
 				hourDeg:0,
-				minDeg:0
+				minDeg:0,
+				peom:''
 			}
 		},
 		onLoad() {
+			this.getPoem();
 			this.init();
 			this.getPlan();
 			this.getAgePlan();
 			this.getAge24Time();
 		},
 		methods: {
+			getPoem(){
+				poem.load(res => {
+					console.log(res)
+					this.peom = res.data.content;
+				})
+			},
 			init(){
 				uni.getStorage({
 					key: this.birthDayKey,
