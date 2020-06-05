@@ -11,7 +11,7 @@
 			<e-picker mode="date"  class="bold"  @change="change">{{birthDay||'选择出生日期'}}</e-picker>
 		</view>
 
-		<view class="line">
+		<view class="line" v-show="birthDay">
 			<text class="text">你的年龄是:</text>
 			<text class="bold">{{age}}</text>
 		</view>
@@ -46,8 +46,6 @@
 				age:0,
 				timePlan:'',
 				birthDayKey: 'birthDay',
-				hourPlan: 0,
-				minPlan: 0,
 				hourDeg:0,
 				minDeg:0
 			}
@@ -121,17 +119,10 @@
 				let minutesTotal = 24*60;
 				let agePlan = Math.ceil(minutesTotal * (this.agePlan/100));
 				let hour = Math.trunc(agePlan/60);
-				let minute = agePlan%60;
+				let minute = Number(agePlan%60);
 				this.timePlan = hour+'点'+minute+'分';
-				this.hourPlan = hour;
-				this.minPlan = minute;
-				this.timeAnimation();
-			},
-			timeAnimation() {
-				const minsDegrees = (this.minPlan / 60) * 360 + (60 / 60) * 6 + 90;
-				this.minDeg = minsDegrees;
-				const hourDegrees = (this.hourPlan / 12) * 360 + (this.minPlan / 60) * 30 + 90;
-				this.hourDeg = hourDegrees;
+				this.minDeg =  Number((minute / 60) * 360 + (60 / 60) * 6 + 90);
+				this.hourDeg = Number((hour / 12) * 360 + (minute / 60) * 30 + 90);
 			},
 		}
 	}
