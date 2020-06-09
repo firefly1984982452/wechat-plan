@@ -35,8 +35,11 @@
 		</view>
 
 		<view class="line">
-			<text class="bold">{{poem}}</text>
+			<text class="bold">{{peom}}</text>
+			<button class="btn-change" @click="getPoem">换一句</button>
 		</view>
+		
+		<button open-type="share"></button>
 	</view>
 </template>
 
@@ -60,13 +63,20 @@
 			this.getPoem();
 			this.init();
 			this.getPlan();
-			this.getAgePlan();
-			this.getAge24Time();
+		},
+		onShareAppMessage(res) {
+			if (res.from === 'button') {
+				console.log("来自页面内按钮分享")
+			}
+			return {
+				path:"",
+				title: "分享"
+			}
 		},
 		methods: {
 			getPoem(){
 				poem.load(res => {
-					console.log(res)
+					console.log(res.data.content)
 					this.peom = res.data.content;
 				})
 			},
@@ -74,7 +84,10 @@
 				uni.getStorage({
 					key: this.birthDayKey,
 					success: res => {
+						console.log(res)
 						this.birthDay = res.data;
+						this.getAgePlan();
+						this.getAge24Time();
 					},
 					fail: () => {
 						uni.setStorage({
@@ -93,9 +106,11 @@
 				uni.setStorage({
 					key: this.birthDayKey,
 					data: this.birthDay,
+					success: res => {
+						this.getAgePlan();
+						this.getAge24Time();
+					}
 				})
-				this.getAgePlan();
-				this.getAge24Time();
 			},
 			// 计算今天是今年的进度的多少
 			getPlan(){
@@ -114,26 +129,27 @@
 				console.log(this.birthDay)
 				let now = new Date();
 				let str = this.birthDay;
-				let year = Number(str.substr(0,4));
-				let month = Number(str.substr(5,2));
-				let day = Number(str.substr(8,4));
+				let year = str.substr(0,4);
+				let month = str.substr(5,2);
+				let day = str.substr(8,4);
 				this.age = now.getFullYear() - year;
-				let startBirthDay = Math.floor(new Date(year + '-' + month + '-' + day + ' 00:00:00').getTime()/1000);
-				let endBirthDay = Math.floor(new Date(Number(year + 80) + '-' + month + '-' + day + ' 23:59:59').getTime()/1000);
+				let startBirthDay = Math.floor(new Date(year + '/' + month + '/' + day + ' 00:00:00').getTime()/1000);
+				let endBirthDay = Math.floor(new Date(Number(Number(year) + 80) + '/' + month + '/' + day + ' 23:59:59').getTime()/1000);
 				let nowTimeStamp = Math.floor(now.getTime()/1000);
 				let reduceTotal = endBirthDay - startBirthDay;
 				let reduceNow = nowTimeStamp - startBirthDay;
 				let plan = parseFloat(((reduceNow/reduceTotal)*100).toFixed(2));
 				this.agePlan = plan;
-				console.log(plan)
 			},
 			// 你目前的年龄相当于时钟上的几点几分
 			getAge24Time() {
+				console.log('>>>')
 				let minutesTotal = 24*60;
 				let agePlan = Math.ceil(minutesTotal * (this.agePlan/100));
 				let hour = Math.trunc(agePlan/60);
 				let minute = Number(agePlan%60);
 				this.timePlan = hour+'点'+minute+'分';
+				console.log(agePlan,this.timePlan);
 				this.minDeg =  Number((minute / 60) * 360 + (60 / 60) * 6 + 90);
 				this.hourDeg = Number((hour / 12) * 360 + (minute / 60) * 30 + 90);
 			},
@@ -147,7 +163,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		font-size: 20rpx;
+		font-size: 30rpx;
 		padding: 10rpx;
 	}
 	.line {
@@ -163,7 +179,7 @@
 	.bold {
 		display: flex;
 		flex: 1;
-		font-size: 14rpx;
+		font-size: 35rpx;
 		color: #5d97fb;
 		font-weight: bold;
 	}
@@ -199,6 +215,12 @@
 		padding: 2rpx;
 		box-shadow: 0 0 0 4rpx rgba(0, 0, 0, 0.1), inset 0 0 0 3rpx #efefef,
 		inset 0 0 10rpx #333, 0 0 10rpx rgba(0, 0, 0, 0.2);
+	}
+	.btn-change {
+		width: 200rpx;
+		height: 50rpx;
+		line-height: 50rpx;
+		font-size: 25rpx;
 	}
 
 

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "uni-app",
+  "navigationBarTitleText": "人生时间进度条",
   "usingComponents": {
     "e-picker": "/components/e-picker/e-picker"
   }
