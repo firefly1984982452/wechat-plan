@@ -181,6 +181,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 var poem = __webpack_require__(/*! ../../utils/jinrishici */ 17);var _default =
 {
@@ -201,13 +204,20 @@ var poem = __webpack_require__(/*! ../../utils/jinrishici */ 17);var _default =
     this.getPoem();
     this.init();
     this.getPlan();
-    this.getAgePlan();
-    this.getAge24Time();
+  },
+  onShareAppMessage: function onShareAppMessage(res) {
+    if (res.from === 'button') {
+      console.log("来自页面内按钮分享");
+    }
+    return {
+      path: "",
+      title: "分享" };
+
   },
   methods: {
     getPoem: function getPoem() {var _this = this;
       poem.load(function (res) {
-        console.log(res);
+        console.log(res.data.content);
         _this.peom = res.data.content;
       });
     },
@@ -215,7 +225,10 @@ var poem = __webpack_require__(/*! ../../utils/jinrishici */ 17);var _default =
       uni.getStorage({
         key: this.birthDayKey,
         success: function success(res) {
+          console.log(res);
           _this2.birthDay = res.data;
+          _this2.getAgePlan();
+          _this2.getAge24Time();
         },
         fail: function fail() {
           uni.setStorage({
@@ -228,15 +241,17 @@ var poem = __webpack_require__(/*! ../../utils/jinrishici */ 17);var _default =
         } });
 
     },
-    change: function change(e) {
+    change: function change(e) {var _this3 = this;
       this.birthDay = e;
       // 本地存储
       uni.setStorage({
         key: this.birthDayKey,
-        data: this.birthDay });
+        data: this.birthDay,
+        success: function success(res) {
+          _this3.getAgePlan();
+          _this3.getAge24Time();
+        } });
 
-      this.getAgePlan();
-      this.getAge24Time();
     },
     // 计算今天是今年的进度的多少
     getPlan: function getPlan() {
@@ -255,26 +270,27 @@ var poem = __webpack_require__(/*! ../../utils/jinrishici */ 17);var _default =
       console.log(this.birthDay);
       var now = new Date();
       var str = this.birthDay;
-      var year = Number(str.substr(0, 4));
-      var month = Number(str.substr(5, 2));
-      var day = Number(str.substr(8, 4));
+      var year = str.substr(0, 4);
+      var month = str.substr(5, 2);
+      var day = str.substr(8, 4);
       this.age = now.getFullYear() - year;
-      var startBirthDay = Math.floor(new Date(year + '-' + month + '-' + day + ' 00:00:00').getTime() / 1000);
-      var endBirthDay = Math.floor(new Date(Number(year + 80) + '-' + month + '-' + day + ' 23:59:59').getTime() / 1000);
+      var startBirthDay = Math.floor(new Date(year + '/' + month + '/' + day + ' 00:00:00').getTime() / 1000);
+      var endBirthDay = Math.floor(new Date(Number(Number(year) + 80) + '/' + month + '/' + day + ' 23:59:59').getTime() / 1000);
       var nowTimeStamp = Math.floor(now.getTime() / 1000);
       var reduceTotal = endBirthDay - startBirthDay;
       var reduceNow = nowTimeStamp - startBirthDay;
       var plan = parseFloat((reduceNow / reduceTotal * 100).toFixed(2));
       this.agePlan = plan;
-      console.log(plan);
     },
     // 你目前的年龄相当于时钟上的几点几分
     getAge24Time: function getAge24Time() {
+      console.log('>>>');
       var minutesTotal = 24 * 60;
       var agePlan = Math.ceil(minutesTotal * (this.agePlan / 100));
       var hour = Math.trunc(agePlan / 60);
       var minute = Number(agePlan % 60);
       this.timePlan = hour + '点' + minute + '分';
+      console.log(agePlan, this.timePlan);
       this.minDeg = Number(minute / 60 * 360 + 60 / 60 * 6 + 90);
       this.hourDeg = Number(hour / 12 * 360 + minute / 60 * 30 + 90);
     } } };exports.default = _default;

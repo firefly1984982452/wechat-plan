@@ -13,7 +13,7 @@
 	-webkit-box-pack: center;
 	-webkit-justify-content: center;
 	        justify-content: center;
-	font-size: 20rpx;
+	font-size: 30rpx;
 	padding: 10rpx;
 }
 .line {
@@ -42,7 +42,7 @@
 	-webkit-box-flex: 1;
 	-webkit-flex: 1;
 	        flex: 1;
-	font-size: 14rpx;
+	font-size: 35rpx;
 	color: #5d97fb;
 	font-weight: bold;
 }
@@ -84,6 +84,12 @@
 	padding: 2rpx;
 	box-shadow: 0 0 0 4rpx rgba(0, 0, 0, 0.1), inset 0 0 0 3rpx #efefef,
 	inset 0 0 10rpx #333, 0 0 10rpx rgba(0, 0, 0, 0.2);
+}
+.btn-change {
+	width: 200rpx;
+	height: 50rpx;
+	line-height: 50rpx;
+	font-size: 25rpx;
 }
 .hand {
 	width: 45%;
