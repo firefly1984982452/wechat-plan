@@ -36,7 +36,12 @@
 
 		<view class="line">
 			<text class="bold">{{peom}}</text>
+			<button class="btn-change" @click="like">收藏</button>
 			<button class="btn-change" @click="getPoem">换一句</button>
+		</view>
+
+		<view class="poem-list">
+			<text v-for="(item,index) in peomList" :key="index">{{item}}</text>
 		</view>
 		
 		<button open-type="share"></button>
@@ -44,7 +49,7 @@
 </template>
 
 <script>
-	const poem = require('../../utils/jinrishici')
+	const poem = require('../../utils/jinrishici');
 	export default {
 		data() {
 			return {
@@ -56,11 +61,14 @@
 				birthDayKey: 'birthDay',
 				hourDeg:0,
 				minDeg:0,
-				peom:''
+				peom:'',
+				peomList: [],
+				peomKey: 'peomKey'
 			}
 		},
 		onLoad() {
 			this.getPoem();
+			this.getPoemList();
 			this.init();
 			this.getPlan();
 		},
@@ -153,6 +161,29 @@
 				this.minDeg =  Number((minute / 60) * 360 + (60 / 60) * 6 + 90);
 				this.hourDeg = Number((hour / 12) * 360 + (minute / 60) * 30 + 90);
 			},
+			like() {
+				this.peomList.push(this.peom);
+				uni.setStorage({
+					key: this.peomKey,
+					data: this.peomList,
+					success: res => {
+						uni.showModal({
+							title: '收藏成功'
+						})
+					}
+				})
+			},
+			getPoemList() {
+				this.getStorage({
+					key: this.peomKey,
+					success: res => {
+						this.peomList = res.data;
+					},
+					fail: () => {
+						this.peomList = [];
+					}
+				})
+			}
 		}
 	}
 </script>
